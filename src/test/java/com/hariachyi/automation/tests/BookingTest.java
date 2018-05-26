@@ -22,16 +22,16 @@ public class BookingTest {
         traveler.opens_home_page();
         traveler.sets_currency("€");
         traveler.sets_language("English (US)");
-//        traveler.sets_destination("Málaga, Andalucía, Spain");
-//        traveler.sets_check_in("last day of current month");
-//        traveler.sets_check_out("first day of next month");
-//        traveler.sets_adults("1");
-//        traveler.sets_children("1 child 5 years old");
-//        traveler.clicks_search_button();
-//        traveler.sets_rooms("2");
-//        traveler.checks_im_traveling_for_work();
-//        traveler.clicks_search_button();
-//        traveler.asserts_property();
+        traveler.sets_destination("Málaga, Andalucía, Spain");
+        traveler.sets_check_in_month_and_day("current", "last");
+        traveler.sets_check_out_month_and_day("next", "first");
+        traveler.sets_adults("1");
+        traveler.sets_children_and_years(5);
+        traveler.clicks_search_button();
+        traveler.sets_rooms(2);
+        traveler.checks_im_traveling_for_work(true);
+        traveler.clicks_search_button();
+        traveler.asserts_property();
     }
 
     /*

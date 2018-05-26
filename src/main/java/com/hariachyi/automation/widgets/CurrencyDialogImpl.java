@@ -1,11 +1,11 @@
 package com.hariachyi.automation.widgets;
 
 import lombok.Getter;
+import net.serenitybdd.core.annotations.findby.FindBy;
 import net.serenitybdd.core.pages.PageObject;
 import net.serenitybdd.core.pages.WebElementFacade;
 import net.serenitybdd.core.pages.WidgetObjectImpl;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.pagefactory.ElementLocator;
 
 import java.util.List;
