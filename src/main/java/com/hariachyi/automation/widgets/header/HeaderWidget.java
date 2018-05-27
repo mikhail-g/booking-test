@@ -1,4 +1,4 @@
-package com.hariachyi.automation.widgets;
+package com.hariachyi.automation.widgets.header;
 
 import net.serenitybdd.core.annotations.ImplementedBy;
 import net.serenitybdd.core.pages.WebElementFacade;

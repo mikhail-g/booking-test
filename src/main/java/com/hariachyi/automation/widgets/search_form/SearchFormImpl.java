@@ -1,4 +1,4 @@
-package com.hariachyi.automation.widgets;
+package com.hariachyi.automation.widgets.search_form;
 
 import lombok.Getter;
 import net.serenitybdd.core.annotations.findby.FindBy;
@@ -45,6 +45,9 @@ public class SearchFormImpl extends WidgetObjectImpl implements SearchForm {
 
     @FindBy(css = ".xp__dates__checkout .c2-calendar,.--checkout-field .c2-calendar")
     CalendarWidget checkOutCalendarWidget;
+
+    @FindBy(className = "xp__guests")
+    WebElementFacade guestsButton;
 
     public SearchFormImpl(PageObject page, ElementLocator locator, WebElement webElement, long timeoutInMilliseconds) {
         super(page, locator, webElement, timeoutInMilliseconds);

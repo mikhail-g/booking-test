@@ -1,4 +1,4 @@
-package com.hariachyi.automation.widgets;
+package com.hariachyi.automation.widgets.header;
 
 import lombok.Getter;
 import net.serenitybdd.core.annotations.findby.FindBy;

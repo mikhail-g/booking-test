@@ -1,4 +1,4 @@
-package com.hariachyi.automation.widgets;
+package com.hariachyi.automation.widgets.search_form;
 
 import lombok.Getter;
 import net.serenitybdd.core.annotations.findby.FindBy;
@@ -11,17 +11,16 @@ import org.openqa.selenium.support.pagefactory.ElementLocator;
 import java.util.List;
 
 @Getter
+public class MonthWidgetImpl extends WidgetObjectImpl implements MonthWidget {
 
-public class LanguageDialogImpl extends WidgetObjectImpl implements LanguageDialog {
+    @FindBy(css = "[data-id]")
+    List<WebElementFacade> dayList;
 
-    @FindBy(css = "#current_language_foldout .seldescription")
-    List<WebElementFacade> languageList;
-
-    public LanguageDialogImpl(PageObject page, ElementLocator locator, WebElement webElement, long timeoutInMilliseconds) {
+    public MonthWidgetImpl(PageObject page, ElementLocator locator, WebElement webElement, long timeoutInMilliseconds) {
         super(page, locator, webElement, timeoutInMilliseconds);
     }
 
-    public LanguageDialogImpl(PageObject page, ElementLocator locator, long timeoutInMilliseconds) {
+    public MonthWidgetImpl(PageObject page, ElementLocator locator, long timeoutInMilliseconds) {
         super(page, locator, timeoutInMilliseconds);
     }
 }

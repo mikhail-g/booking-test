@@ -3,18 +3,21 @@ package com.hariachyi.automation.steps;
 import com.hariachyi.automation.model.SearchResult;
 import com.hariachyi.automation.pages.HomePage;
 import com.hariachyi.automation.pages.SearchResultPage;
-import com.hariachyi.automation.widgets.SignInPopup;
+import com.hariachyi.automation.widgets.header.SignInPopup;
+import com.hariachyi.automation.widgets.search_page.SearchItemWidget;
 import lombok.extern.slf4j.Slf4j;
+import net.serenitybdd.core.pages.WebElementFacade;
 import net.thucydides.core.annotations.Step;
 import net.thucydides.core.steps.ScenarioSteps;
 import org.junit.Assert;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.*;
 
 @Slf4j
 public class TravelerSteps extends ScenarioSteps {
@@ -99,63 +102,20 @@ public class TravelerSteps extends ScenarioSteps {
                 .getCheckOutCalendarWidget()
                 .selectDate(dateIndexes[0], dateIndexes[1]);
     }
-//
-//    private void selectDate(int monthIndex, int dayIndex) {
-//        log.info("Setting calendar with month index '{}' and dayIndex '{}'", monthIndex, dayIndex);
-//        List<WebElementFacade> cellList = homePage.getSearchForm()
-//                .getCalendarWidget()
-//                .getMonthWidgetList()
-//                .get(monthIndex)
-//                .getDayList();
-//        cellList.get(dayIndex).click();
-//    }
-
-//    private void selectDate(String month, String day, SearchForm searchForm) {
-//        log.info("Setting check in Month '{}' and day '{}'", month, day);
-//        int monthIndex = ("next".equals(month.toLowerCase()))? 1 : 0;
-//        LocalDate now = LocalDate.now();
-//        LocalDate targetMonth = now.withMonth(now.getMonth().plus(monthIndex).getValue());
-//        int dayIndex = ("last".equals(day.toLowerCase())) ? targetMonth.lengthOfMonth() -1 : 0;
-//        List<WebElementFacade> cellList = searchForm.getCalendarWidget()
-//                .getMonthWidgetList()
-//                .get(monthIndex)
-//                .getDayList();
-//        cellList.get(dayIndex).click();
-//    }
-
-    private LocalDate parseDate(String month, String day) {
-        LocalDate now = LocalDate.now();
-        if ("next".equals(month.toLowerCase())) {
-            now = now.withMonth(now.getMonth().plus(1).getValue());
-        }
-        if ("first".equals(day.toLowerCase())) {
-            now = now.withDayOfMonth(1);
-        }
-        if ("first".equals(day.toLowerCase())) {
-            now = now.withDayOfMonth(now.lengthOfMonth());
-        }
-        return now;
-    }
-
-//    public void sets_check_in(LocalDate date) {
-//        log.info("Setting check in date '{}'", date);
-//        SearchForm searchForm = homePage.getSearchForm();
-//        searchForm.getCheckInDatePicker()
-//                .click();
-////        searchForm.getCalendarWidget().select(date);
-//        List<WebElementFacade> cellList = searchForm.getCalendarWidget()
-//                .getMonthWidgetList()
-//                .get(0)
-//                .getDayList();
-//        cellList.get(cellList.size()-1).click();
-//
-//    }
 
     public void sets_adults(String adultsNumber) {
         log.info("Setting number of adults '{}'", adultsNumber);
+        expandGuestsMenu();
         homePage.getSearchForm()
                 .getAdultsDropDown()
                 .selectByValue(adultsNumber);
+    }
+
+    private void expandGuestsMenu() {
+        WebElementFacade guestsButton = homePage.getSearchForm().getGuestsButton();
+        if (guestsButton.isPresent()) {
+            guestsButton.click();
+        }
     }
 
     public void sets_children_and_years(int... childrenYears) {
@@ -175,13 +135,6 @@ public class TravelerSteps extends ScenarioSteps {
         });
     }
 
-    public void clicks_search_button() {
-        log.info("Clicking Search button");
-        homePage.getSearchForm()
-                .getSearchButton()
-                .click();
-    }
-
     public void sets_rooms(int roomsNumber) {
         log.info("Setting number of rooms '{}'", roomsNumber);
         homePage.getSearchForm()
@@ -196,23 +149,36 @@ public class TravelerSteps extends ScenarioSteps {
                 .click();
     }
 
+    public void clicks_search_button() {
+        log.info("Clicking Search button");
+        homePage.getSearchForm()
+                .getSearchButton()
+                .click();
+    }
+
     public void asserts_property() {
         log.info("Asserting property");
         BigDecimal EURO_200 = new BigDecimal("200");
-        BigDecimal SCORE_8_0 = new BigDecimal("200");
+        BigDecimal SCORE_8_0 = new BigDecimal("8.0");
         SearchResult emptyResult = SearchResult.of(BigDecimal.ZERO, BigDecimal.ZERO);
-        SearchResult searchResult = searchResultPage.getSearchItemWidgetList().stream()
-                .map(item -> SearchResult.of(item.getTotalPrice(), new BigDecimal(item.getReviewScore().getText())))
-                .filter(item -> 0 < item.getReviewScore().compareTo(SCORE_8_0))
-                .filter(item -> 0 < item.getTotalPrice().compareTo(EURO_200))
+        List<SearchItemWidget> searchItemWidgetList = searchResultPage.getSearchItemWidgetList();
+        log.info("Search results size: {}", searchItemWidgetList.size());
+        List<SearchResult> searchResultList = searchItemWidgetList.stream()
+                .map(item -> {
+                    log.info("Received item: name '{}', price '{}', score '{}'", item.getHotelName().getText(), item.getTotalPrice(), item.getReviewScore());
+                    return SearchResult.of(item.getTotalPrice(), item.getReviewScore());
+                }).collect(Collectors.toList());
+
+        searchResultList.forEach(item -> log.info("{}", item));
+        Assert.assertThat("There is no item with Review Score > 8.0 and Price < 200 EURO in search results!",
+                searchResultList, hasItem(allOf(hasProperty("totalPrice", lessThan(EURO_200)), hasProperty("reviewScore", greaterThan(SCORE_8_0)))));
+
+        SearchResult searchResult = searchResultList.stream()
+                .filter(item -> item.getReviewScore().compareTo(SCORE_8_0) > 0)
+                .filter(item -> item.getTotalPrice().compareTo(EURO_200) < 0)
                 .findFirst().orElse(emptyResult);
         Assert.assertThat("There is no item with Review Score > 8.0 and Price < 200 EURO in search results!",
                 searchResult, is(not(emptyResult)));
         log.info("The Hotel that satisfies to all the conditions is {}", searchResult);
-        /*
-        6.	Assert that there is a property with both
-            o	a review mark of higher than ‘8.0’ and
-            o	price under ‘200’ EUR
-        7.	Use Console.log to report the name of the first property found*/
     }
 }

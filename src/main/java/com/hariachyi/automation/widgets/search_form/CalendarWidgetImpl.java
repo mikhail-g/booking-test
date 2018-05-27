@@ -1,4 +1,4 @@
-package com.hariachyi.automation.widgets;
+package com.hariachyi.automation.widgets.search_form;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;

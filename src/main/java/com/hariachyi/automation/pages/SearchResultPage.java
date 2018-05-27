@@ -1,6 +1,6 @@
 package com.hariachyi.automation.pages;
 
-import com.hariachyi.automation.widgets.SearchItemWidget;
+import com.hariachyi.automation.widgets.search_page.SearchItemWidget;
 import lombok.Getter;
 import net.serenitybdd.core.annotations.findby.FindBy;
 import net.serenitybdd.core.pages.PageObject;
