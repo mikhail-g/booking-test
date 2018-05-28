@@ -1,6 +1,7 @@
 package com.hariachyi.automation.tests;
 
-import com.hariachyi.automation.steps.TravelerSteps;
+import com.hariachyi.automation.steps.TravelerActions;
+import com.hariachyi.automation.steps.TravelerExpectations;
 import net.serenitybdd.junit.runners.SerenityRunner;
 import net.thucydides.core.annotations.Managed;
 import net.thucydides.core.annotations.Steps;
@@ -47,7 +48,9 @@ public class BookingTest {
     WebDriver driver;
 
     @Steps
-    private TravelerSteps traveler;
+    private TravelerActions traveler;
+    @Steps
+    private TravelerExpectations expect;
 
     @Test
     public void propertySearch() {
@@ -63,6 +66,6 @@ public class BookingTest {
         traveler.sets_rooms(2);
         traveler.checks_im_traveling_for_work(true);
         traveler.clicks_search_button();
-        traveler.search_result_should_contain_item_with("200", "8.0");
+        expect.search_result_should_contain_item_with("200", "8.0");
     }
 }
