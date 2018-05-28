@@ -3,6 +3,7 @@ package com.hariachyi.automation.steps;
 import com.hariachyi.automation.model.SearchResultDto;
 import com.hariachyi.automation.pages.SearchResultPage;
 import lombok.extern.slf4j.Slf4j;
+import net.thucydides.core.annotations.Step;
 import net.thucydides.core.steps.ScenarioSteps;
 import org.hamcrest.Matcher;
 import org.junit.Assert;
@@ -17,6 +18,7 @@ public class TravelerExpectations extends ScenarioSteps {
 
     private SearchResultPage searchResultPage;
 
+    @Step
     public void search_result_should_contain_item_with(String priceLoverThan, String reviewScoreMoreThan) {
         log.info("Verifying search result list");
         BigDecimal maxPrice = new BigDecimal(priceLoverThan);
