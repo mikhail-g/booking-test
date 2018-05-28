@@ -1,20 +1,17 @@
 package com.hariachyi.automation.steps;
 
-import com.hariachyi.automation.model.SearchResult;
+import com.hariachyi.automation.model.SearchResultDto;
 import com.hariachyi.automation.pages.HomePage;
 import com.hariachyi.automation.pages.SearchResultPage;
-import com.hariachyi.automation.widgets.header.SignInPopup;
-import com.hariachyi.automation.widgets.search_page.SearchItemWidget;
 import lombok.extern.slf4j.Slf4j;
-import net.serenitybdd.core.pages.WebElementFacade;
 import net.thucydides.core.annotations.Step;
 import net.thucydides.core.steps.ScenarioSteps;
+import org.hamcrest.Matcher;
 import org.junit.Assert;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.hamcrest.Matchers.*;
@@ -29,12 +26,6 @@ public class TravelerSteps extends ScenarioSteps {
     public void opens_home_page() {
         log.info("Opening Home Page...");
         homePage.open();
-        SignInPopup signInPopup = homePage.getHeader()
-                .getSignInPopup();
-        if (signInPopup.isPresent()) {
-            log.info("Closing SignIn popup...");
-            signInPopup.getCloseButton().click();
-        }
     }
 
     @Step
@@ -47,8 +38,8 @@ public class TravelerSteps extends ScenarioSteps {
                 .getCurrencyDialog()
                 .getCurrencyCodeList()
                 .stream().filter(symbol -> currencyCode.equals(symbol.getText())).findFirst()
-                .orElseThrow(() -> new RuntimeException(String.format("There is no currencyCode with " +
-                        "code '%s' in the Currency Dialog!", currencyCode)))
+                .orElseThrow(() -> new RuntimeException(
+                        String.format("There is no currency '%s' in the Currency Dialog!", currencyCode)))
                 .click();
     }
 
@@ -61,8 +52,8 @@ public class TravelerSteps extends ScenarioSteps {
                 .getLanguageDialog()
                 .getLanguageList()
                 .stream().filter(item -> language.equals(item.getText())).findFirst()
-                .orElseThrow(() -> new RuntimeException(String.format("There is no language with '%s' in the Language" +
-                        " Dialog!", language)))
+                .orElseThrow(() -> new RuntimeException(
+                        String.format("There is no language '%s' in the Language Dialog!", language)))
                 .click();
     }
 
@@ -103,25 +94,19 @@ public class TravelerSteps extends ScenarioSteps {
                 .selectDate(dateIndexes[0], dateIndexes[1]);
     }
 
-    public void sets_adults(String adultsNumber) {
+    public void sets_adults(int adultsNumber) {
         log.info("Setting number of adults '{}'", adultsNumber);
-        expandGuestsMenu();
         homePage.getSearchForm()
+                .expandGuestsMenu()
                 .getAdultsDropDown()
-                .selectByValue(adultsNumber);
-    }
-
-    private void expandGuestsMenu() {
-        WebElementFacade guestsButton = homePage.getSearchForm().getGuestsButton();
-        if (guestsButton.isPresent()) {
-            guestsButton.click();
-        }
+                .selectByValue(String.valueOf(adultsNumber));
     }
 
     public void sets_children_and_years(int... childrenYears) {
         int childrenNumber = childrenYears.length;
         log.info("Setting number of children '{}'", childrenNumber);
         homePage.getSearchForm()
+                .expandGuestsMenu()
                 .getChildrenDropDown()
                 .selectByValue(String.valueOf(childrenNumber));
 
@@ -138,6 +123,7 @@ public class TravelerSteps extends ScenarioSteps {
     public void sets_rooms(int roomsNumber) {
         log.info("Setting number of rooms '{}'", roomsNumber);
         homePage.getSearchForm()
+                .expandGuestsMenu()
                 .getRoomDropDown()
                 .selectByValue(String.valueOf(roomsNumber));
     }
@@ -146,7 +132,7 @@ public class TravelerSteps extends ScenarioSteps {
         log.info("Setting i'm traveling for work check-box state '{}'", state);
         homePage.getSearchForm()
                 .getForWorkCheckBox()
-                .click();
+                .setChecked(state);
     }
 
     public void clicks_search_button() {
@@ -156,29 +142,22 @@ public class TravelerSteps extends ScenarioSteps {
                 .click();
     }
 
-    public void asserts_property() {
-        log.info("Asserting property");
-        BigDecimal EURO_200 = new BigDecimal("200");
-        BigDecimal SCORE_8_0 = new BigDecimal("8.0");
-        SearchResult emptyResult = SearchResult.of(BigDecimal.ZERO, BigDecimal.ZERO);
-        List<SearchItemWidget> searchItemWidgetList = searchResultPage.getSearchItemWidgetList();
-        log.info("Search results size: {}", searchItemWidgetList.size());
-        List<SearchResult> searchResultList = searchItemWidgetList.stream()
-                .map(item -> {
-                    log.info("Received item: name '{}', price '{}', score '{}'", item.getHotelName().getText(), item.getTotalPrice(), item.getReviewScore());
-                    return SearchResult.of(item.getTotalPrice(), item.getReviewScore());
-                }).collect(Collectors.toList());
+    public void search_result_should_contain_item_with(String priceLoverThan, String reviewScoreMoreThan) {
+        log.info("Verifying search result list");
+        BigDecimal maxPrice = new BigDecimal(priceLoverThan);
+        BigDecimal minScore = new BigDecimal(reviewScoreMoreThan);
+        List<SearchResultDto> searchResultDtoList = searchResultPage.getSearchResultDtoList();
 
-        searchResultList.forEach(item -> log.info("{}", item));
-        Assert.assertThat("There is no item with Review Score > 8.0 and Price < 200 EURO in search results!",
-                searchResultList, hasItem(allOf(hasProperty("totalPrice", lessThan(EURO_200)), hasProperty("reviewScore", greaterThan(SCORE_8_0)))));
+        Matcher<Iterable<? super Object>> hotelMatcher = allOf(
+                hasProperty("totalPrice", both(lessThan(maxPrice)).and(not(BigDecimal.ZERO))),
+                hasProperty("reviewScore", greaterThan(minScore)
+                ));
 
-        SearchResult searchResult = searchResultList.stream()
-                .filter(item -> item.getReviewScore().compareTo(SCORE_8_0) > 0)
-                .filter(item -> item.getTotalPrice().compareTo(EURO_200) < 0)
-                .findFirst().orElse(emptyResult);
         Assert.assertThat("There is no item with Review Score > 8.0 and Price < 200 EURO in search results!",
-                searchResult, is(not(emptyResult)));
-        log.info("The Hotel that satisfies to all the conditions is {}", searchResult);
+                searchResultDtoList, hasItem(hotelMatcher));
+
+        SearchResultDto searchResultDto = searchResultDtoList.stream()
+                .filter(hotelMatcher::matches).findFirst().orElse(SearchResultDto.empty());
+        log.info("The Hotel that satisfies to all the conditions is {}", searchResultDto);
     }
 }

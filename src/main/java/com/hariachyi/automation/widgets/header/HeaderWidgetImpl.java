@@ -23,9 +23,6 @@ public class HeaderWidgetImpl extends WidgetObjectImpl implements HeaderWidget {
     @FindBy(id = "current_language")
     LanguageDialog languageDialog;
 
-    @FindBy(className = "header-signin-prompt")
-    SignInPopup signInPopup;
-
     public HeaderWidgetImpl(PageObject page, ElementLocator locator, WebElement webElement, long timeoutInMilliseconds) {
         super(page, locator, webElement, timeoutInMilliseconds);
     }

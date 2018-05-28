@@ -9,7 +9,5 @@ import java.util.List;
 @ImplementedBy(CurrencyDialogImpl.class)
 public interface CurrencyDialog extends WidgetObject {
 
-    WebElementFacade getCurrencyEuro();
-
     List<WebElementFacade> getCurrencyCodeList();
 }

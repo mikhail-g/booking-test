@@ -35,6 +35,10 @@ public class CalendarWidgetImpl extends WidgetObjectImpl implements CalendarWidg
     @Override
     public void selectDate(int monthIndex, int dayIndex) {
         log.info("Setting calendar with month index '{}' and dayIndex '{}'", monthIndex, dayIndex);
+        for (int i = 2; i <= monthIndex; i++) {
+            log.info("Clicking next month button");
+            furtherButton.click();
+        }
         List<WebElementFacade> cellList = this.monthWidgetList.get(monthIndex)
                 .getDayList();
         cellList.get(dayIndex).click();

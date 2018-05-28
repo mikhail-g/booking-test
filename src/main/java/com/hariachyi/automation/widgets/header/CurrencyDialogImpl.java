@@ -13,9 +13,6 @@ import java.util.List;
 @Getter
 public class CurrencyDialogImpl extends WidgetObjectImpl implements CurrencyDialog {
 
-    @FindBy(css = "a[data-currency='EUR']")
-    WebElementFacade currencyEuro;
-
     @FindBy(css = "#current_currency_foldout .selsymbol")
     List<WebElementFacade> currencyCodeList;
 

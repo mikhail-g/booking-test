@@ -3,6 +3,7 @@ package com.hariachyi.automation.widgets.search_form;
 import net.serenitybdd.core.annotations.ImplementedBy;
 import net.serenitybdd.core.pages.WebElementFacade;
 import net.serenitybdd.core.pages.WidgetObject;
+import net.thucydides.core.webelements.Checkbox;
 
 import java.util.List;
 
@@ -23,7 +24,7 @@ public interface SearchForm extends WidgetObject {
 
     WebElementFacade getRoomDropDown();
 
-    WebElementFacade getForWorkCheckBox();
+    Checkbox getForWorkCheckBox();
 
     WebElementFacade getSearchButton();
 
@@ -31,5 +32,5 @@ public interface SearchForm extends WidgetObject {
 
     CalendarWidget getCheckOutCalendarWidget();
 
-    WebElementFacade getGuestsButton();
+    SearchForm expandGuestsMenu();
 }

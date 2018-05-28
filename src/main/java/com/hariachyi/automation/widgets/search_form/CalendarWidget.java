@@ -1,6 +1,7 @@
 package com.hariachyi.automation.widgets.search_form;
 
 import net.serenitybdd.core.annotations.ImplementedBy;
+import net.serenitybdd.core.pages.WebElementFacade;
 import net.serenitybdd.core.pages.WidgetObject;
 
 import java.util.List;
@@ -12,7 +13,7 @@ public interface CalendarWidget extends WidgetObject {
 
     void selectDate(int monthIndex, int dayIndex);
 
-    net.serenitybdd.core.pages.WebElementFacade getEarlierButton();
+    WebElementFacade getEarlierButton();
 
-    net.serenitybdd.core.pages.WebElementFacade getFurtherButton();
+    WebElementFacade getFurtherButton();
 }

@@ -7,7 +7,6 @@ import net.serenitybdd.core.pages.WidgetObject;
 @ImplementedBy(HeaderWidgetImpl.class)
 public interface HeaderWidget extends WidgetObject {
 
-
     WebElementFacade getCurrencyLink();
 
     CurrencyDialog getCurrencyDialog();
@@ -15,6 +14,4 @@ public interface HeaderWidget extends WidgetObject {
     WebElementFacade getLanguageLink();
 
     LanguageDialog getLanguageDialog();
-
-    SignInPopup getSignInPopup();
 }
