@@ -33,4 +33,6 @@ public interface SearchForm extends WidgetObject {
     CalendarWidget getCheckOutCalendarWidget();
 
     SearchForm expandGuestsMenu();
+
+    WebElementFacade getFirstDestinationSuggestion();
 }

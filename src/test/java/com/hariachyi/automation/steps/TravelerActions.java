@@ -2,6 +2,7 @@ package com.hariachyi.automation.steps;
 
 import com.hariachyi.automation.pages.HomePage;
 import com.hariachyi.automation.pages.SearchResultPage;
+import com.hariachyi.automation.widgets.search_form.SearchForm;
 import lombok.extern.slf4j.Slf4j;
 import net.thucydides.core.annotations.Step;
 import net.thucydides.core.steps.ScenarioSteps;
@@ -57,6 +58,10 @@ public class TravelerActions extends ScenarioSteps {
         homePage.getSearchForm()
                 .getDestinationField()
                 .type(destination);
+        homePage.getSearchForm()
+                .getFirstDestinationSuggestion()
+                .click();
+
     }
 
     private int[] parseDateIndexes(String month, String day) {
@@ -70,24 +75,26 @@ public class TravelerActions extends ScenarioSteps {
     @Step
     public void sets_check_in_month_and_day(String month, String day) {
         log.info("Setting Check In Month '{}' and day '{}'", month, day);
-        homePage.getSearchForm()
-                .getCheckInDatePicker()
-                .click();
         int[] dateIndexes = parseDateIndexes(month, day);
-        homePage.getSearchForm()
-                .getCheckInCalendarWidget()
+        SearchForm searchForm = homePage.getSearchForm();
+        if (!searchForm.getCheckInCalendarWidget().isCurrentlyVisible()) {
+            searchForm.getCheckInDatePicker()
+                    .click();
+        }
+        searchForm.getCheckInCalendarWidget()
                 .selectDate(dateIndexes[0], dateIndexes[1]);
     }
 
     @Step
     public void sets_check_out_month_and_day(String month, String day) {
         log.info("Setting Check Out Month '{}' and day '{}'", month, day);
-        homePage.getSearchForm()
-                .getCheckOutDatePicker()
-                .click();
         int[] dateIndexes = parseDateIndexes(month, day);
-        homePage.getSearchForm()
-                .getCheckOutCalendarWidget()
+        SearchForm searchForm = homePage.getSearchForm();
+        if (!searchForm.getCheckOutCalendarWidget().isCurrentlyVisible()) {
+            searchForm.getCheckOutDatePicker()
+                    .click();
+        }
+        searchForm.getCheckOutCalendarWidget()
                 .selectDate(dateIndexes[0], dateIndexes[1]);
     }
 

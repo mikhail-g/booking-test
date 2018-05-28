@@ -17,6 +17,9 @@ public class SearchFormImpl extends WidgetObjectImpl implements SearchForm {
     @FindBy(id = "ss")
     WebElementFacade destinationField;
 
+    @FindBy(css = "#ss+ul>li")
+    WebElementFacade firstDestinationSuggestion;
+
     @FindBy(className = "c2-wrapper-s-checkin")
     WebElementFacade checkInDatePicker;
 
