@@ -55,6 +55,7 @@ public class BookingTest {
     @Test
     public void propertySearch() {
         traveler.opens_home_page();
+        traveler.closeCookieWarning();
         traveler.sets_currency("€");
         traveler.sets_language("English (US)");
         traveler.sets_destination("Málaga, Andalucía, Spain");
@@ -62,7 +63,6 @@ public class BookingTest {
         traveler.sets_check_out_month_and_day("next", "first");
         traveler.sets_adults(1);
         traveler.sets_children_and_years(5);
-        traveler.clicks_search_button();
         traveler.sets_rooms(2);
         traveler.checks_im_traveling_for_work(true);
         traveler.clicks_search_button();

@@ -1,4 +1,4 @@
-package com.hariachyi.automation.widgets.search_form;
+package com.hariachyi.automation.widgets.search_form.calendar;
 
 import lombok.Getter;
 import net.serenitybdd.core.annotations.findby.FindBy;
@@ -13,7 +13,7 @@ import java.util.List;
 @Getter
 public class MonthWidgetImpl extends WidgetObjectImpl implements MonthWidget {
 
-    @FindBy(css = "[data-id]")
+    @FindBy(css = "[data-date]")
     List<WebElementFacade> dayList;
 
     public MonthWidgetImpl(PageObject page, ElementLocator locator, WebElement webElement, long timeoutInMilliseconds) {

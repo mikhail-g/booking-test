@@ -3,7 +3,9 @@ package com.hariachyi.automation.steps;
 import com.hariachyi.automation.pages.HomePage;
 import com.hariachyi.automation.pages.SearchResultPage;
 import com.hariachyi.automation.widgets.search_form.SearchForm;
+import com.hariachyi.automation.widgets.search_form.guests.GuestsRow;
 import lombok.extern.slf4j.Slf4j;
+import net.serenitybdd.core.pages.WebElementFacade;
 import net.thucydides.core.annotations.Step;
 import net.thucydides.core.steps.ScenarioSteps;
 
@@ -55,11 +57,13 @@ public class TravelerActions extends ScenarioSteps {
     @Step
     public void sets_destination(String destination) {
         log.info("Setting destination '{}'", destination);
-        homePage.getSearchForm()
-                .getDestinationField()
-                .type(destination);
+        WebElementFacade destinationField = homePage.getSearchForm()
+                .getDestinationField();
+        destinationField.click();
+        destinationField.type(destination);
         homePage.getSearchForm()
                 .getFirstDestinationSuggestion()
+                .waitUntilClickable()
                 .click();
 
     }
@@ -77,11 +81,11 @@ public class TravelerActions extends ScenarioSteps {
         log.info("Setting Check In Month '{}' and day '{}'", month, day);
         int[] dateIndexes = parseDateIndexes(month, day);
         SearchForm searchForm = homePage.getSearchForm();
-        if (!searchForm.getCheckInCalendarWidget().isCurrentlyVisible()) {
-            searchForm.getCheckInDatePicker()
+        if (!searchForm.getCalendarWidget().isCurrentlyVisible()) {
+            searchForm.getDatePicker()
                     .click();
         }
-        searchForm.getCheckInCalendarWidget()
+        searchForm.getCalendarWidget()
                 .selectDate(dateIndexes[0], dateIndexes[1]);
     }
 
@@ -90,36 +94,39 @@ public class TravelerActions extends ScenarioSteps {
         log.info("Setting Check Out Month '{}' and day '{}'", month, day);
         int[] dateIndexes = parseDateIndexes(month, day);
         SearchForm searchForm = homePage.getSearchForm();
-        if (!searchForm.getCheckOutCalendarWidget().isCurrentlyVisible()) {
-            searchForm.getCheckOutDatePicker()
+        if (!searchForm.getCalendarWidget().isCurrentlyVisible()) {
+            searchForm.getDatePicker()
                     .click();
         }
-        searchForm.getCheckOutCalendarWidget()
+        searchForm.getCalendarWidget()
                 .selectDate(dateIndexes[0], dateIndexes[1]);
     }
 
     @Step
     public void sets_adults(int adultsNumber) {
         log.info("Setting number of adults '{}'", adultsNumber);
-        homePage.getSearchForm()
-                .expandGuestsMenu()
-                .getAdultsDropDown()
-                .selectByValue(String.valueOf(adultsNumber));
+        expandGuestsMenu();
+        GuestsRow adultsRow = homePage.getSearchForm()
+                .getGuestsWidget()
+                .getAdultsRow();
+        setQuantity(adultsNumber, adultsRow);
     }
 
     @Step
     public void sets_children_and_years(int... childrenYears) {
         int childrenNumber = childrenYears.length;
         log.info("Setting number of children '{}'", childrenNumber);
-        homePage.getSearchForm()
-                .expandGuestsMenu()
-                .getChildrenDropDown()
-                .selectByValue(String.valueOf(childrenNumber));
+        expandGuestsMenu();
+        GuestsRow childrenRow = homePage.getSearchForm()
+                .getGuestsWidget()
+                .getChildrenRow();
+        setQuantity(childrenNumber, childrenRow);
 
         IntStream.range(0, childrenNumber).forEach(child -> {
             int childAge = childrenYears[child];
             log.info("Setting age '{}' year(s) old for child# '{}'", childAge, child);
             homePage.getSearchForm()
+                    .getGuestsWidget()
                     .getChildAgeDropDownsList()
                     .get(child)
                     .selectByValue(String.valueOf(childAge));
@@ -129,10 +136,22 @@ public class TravelerActions extends ScenarioSteps {
     @Step
     public void sets_rooms(int roomsNumber) {
         log.info("Setting number of rooms '{}'", roomsNumber);
-        homePage.getSearchForm()
-                .expandGuestsMenu()
-                .getRoomDropDown()
-                .selectByValue(String.valueOf(roomsNumber));
+        expandGuestsMenu();
+        GuestsRow roomsRow = homePage.getSearchForm()
+                .getGuestsWidget()
+                .getRoomsRow();
+        setQuantity(roomsNumber, roomsRow);
+    }
+
+    private void setQuantity(int adultsNumber, GuestsRow guestsRow) {
+        int currentQuantity = Integer.parseInt(guestsRow.getQuantity().getText());
+        int toAdd = adultsNumber - currentQuantity;
+        WebElementFacade button;
+        button = toAdd >= 0 ? guestsRow.getAddButton() : guestsRow.getSubtractButton();
+        toAdd = Math.abs(toAdd);
+        while (toAdd-- != 0) {
+            button.click();
+        }
     }
 
     @Step
@@ -149,5 +168,24 @@ public class TravelerActions extends ScenarioSteps {
         homePage.getSearchForm()
                 .getSearchButton()
                 .click();
+    }
+
+    @Step
+    public void closeCookieWarning() {
+        homePage.getCookieAcceptButton()
+                .waitUntilClickable()
+                .click();
+    }
+
+    @Step
+    private void expandGuestsMenu() {
+        if (!homePage.getSearchForm()
+                .getGuestsButton()
+                .getAttribute("aria-expanded")
+                .equals("true")) {
+            homePage.getSearchForm()
+                    .getGuestsButton()
+                    .click();
+        }
     }
 }

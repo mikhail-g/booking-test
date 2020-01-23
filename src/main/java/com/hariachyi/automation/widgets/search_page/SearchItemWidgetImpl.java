@@ -1,6 +1,5 @@
 package com.hariachyi.automation.widgets.search_page;
 
-import com.hariachyi.automation.model.SearchResultDto;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.core.annotations.findby.FindBy;
@@ -11,10 +10,6 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.pagefactory.ElementLocator;
 
-import java.math.BigDecimal;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 @Slf4j
 @Getter
 public class SearchItemWidgetImpl extends WidgetObjectImpl implements SearchItemWidget {
@@ -22,10 +17,10 @@ public class SearchItemWidgetImpl extends WidgetObjectImpl implements SearchItem
     @FindBy(className = "sr-hotel__name")
     WebElementFacade hotelName;
 
-    @FindBy(className = "review-score-badge")
+    @FindBy(className = "bui-review-score__badge")
     WebElementFacade reviewScore;
 
-    @FindBy(className = "totalPrice")
+    @FindBy(className = "bui-price-display__value")
     WebElementFacade totalPriceMessage;
 
     public SearchItemWidgetImpl(PageObject page, ElementLocator locator, WebElement webElement, long timeoutInMilliseconds) {
@@ -37,8 +32,8 @@ public class SearchItemWidgetImpl extends WidgetObjectImpl implements SearchItem
     }
 
     @Override
-    public String getHotelName() {
-        return hotelName.getText();
+    public WebElementFacade getHotelName() {
+        return hotelName;
     }
 
     /**
@@ -46,12 +41,8 @@ public class SearchItemWidgetImpl extends WidgetObjectImpl implements SearchItem
      * search result
      */
     @Override
-    public BigDecimal getReviewScore() {
-        BigDecimal result = BigDecimal.ZERO;
-        if (reviewScore.isCurrentlyVisible()) {
-            result = new BigDecimal(reviewScore.getText().replace(",", "."));
-        }
-        return result;
+    public WebElementFacade getReviewScore() {
+        return reviewScore;
     }
 
     /**
@@ -59,30 +50,8 @@ public class SearchItemWidgetImpl extends WidgetObjectImpl implements SearchItem
      * search result
      */
     @Override
-    public BigDecimal getTotalPrice() {
+    public WebElementFacade getTotalPrice() {
         ((JavascriptExecutor) getPage().getDriver()).executeScript("arguments[0].scrollIntoView(true);", hotelName);
-        BigDecimal totalPrice = BigDecimal.ZERO;
-        if (totalPriceMessage.isCurrentlyVisible()) {
-            String text = totalPriceMessage.getText();
-            String regex = "\\d[0-9,.]+";
-            Matcher matcher = Pattern.compile(regex, Pattern.MULTILINE).matcher(text);
-            if (!matcher.find()) {
-                throw new RuntimeException(String.format("No Total Price is found in '%s'", text));
-            }
-            totalPrice = new BigDecimal(matcher.group(0));
-            if (matcher.find()) {
-                throw new RuntimeException(String.format("More then one Total Price is found in '%s'", text));
-            }
-        }
-        return totalPrice;
-    }
-
-    @Override
-    public SearchResultDto getSearchResultDto() {
-        String name = getHotelName();
-        BigDecimal price = getTotalPrice();
-        BigDecimal score = getReviewScore();
-        log.info("Received item: name '{}', price '{}', score '{}'", name, price, score);
-        return SearchResultDto.of(name, price, score);
+        return totalPriceMessage;
     }
 }

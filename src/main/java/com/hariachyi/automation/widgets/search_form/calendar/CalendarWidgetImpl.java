@@ -1,4 +1,4 @@
-package com.hariachyi.automation.widgets.search_form;
+package com.hariachyi.automation.widgets.search_form.calendar;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -15,13 +15,13 @@ import java.util.List;
 @Getter
 public class CalendarWidgetImpl extends WidgetObjectImpl implements CalendarWidget {
 
-    @FindBy(className = "c2-month")
+    @FindBy(className = "bui-calendar__dates")
     List<MonthWidget> monthWidgetList;
 
-    @FindBy(className = "c2-button-earlier")
+    @FindBy(className = "bui-calendar__control--prev")
     WebElementFacade earlierButton;
 
-    @FindBy(className = "c2-button-further")
+    @FindBy(className = "bui-calendar__control--next")
     WebElementFacade furtherButton;
 
     public CalendarWidgetImpl(PageObject page, ElementLocator locator, WebElement webElement, long timeoutInMilliseconds) {
