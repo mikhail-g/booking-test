@@ -1,4 +1,4 @@
-package com.hariachyi.automation.tests;
+package com.hariachyi.automation.tests.e2e;
 
 import com.hariachyi.automation.steps.TravelerActions;
 import com.hariachyi.automation.steps.TravelerExpectations;
@@ -65,6 +65,26 @@ public class BookingTest {
         traveler.sets_children_and_years(5);
         traveler.sets_rooms(2);
         traveler.checks_im_traveling_for_work(true);
+        traveler.clicks_search_button();
+        expect.search_result_should_contain_item_with("200", "8.0");
+    }
+
+    @Test
+    public void propertySearchOnlyDestination() {
+        traveler.opens_home_page();
+        traveler.closeCookieWarning();
+        traveler.sets_destination("Málaga, Andalucía, Spain");
+        traveler.clicks_search_button();
+        expect.search_result_should_contain_item_with("200", "8.0");
+    }
+
+    @Test
+    public void propertySearchDestinationAndDate() {
+        traveler.opens_home_page();
+        traveler.closeCookieWarning();
+        traveler.sets_destination("Málaga, Andalucía, Spain");
+        traveler.sets_check_in_month_and_day("current", "last");
+        traveler.sets_check_out_month_and_day("next", "first");
         traveler.clicks_search_button();
         expect.search_result_should_contain_item_with("200", "8.0");
     }
